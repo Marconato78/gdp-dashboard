@@ -3,48 +3,48 @@ import pandas as pd
 import math
 from pathlib import Path
 
-# Set the title and favicon that appear in the Browser's tab bar.
+# Establece el título y el favicon que aparecen en la barra de pestañas del navegador.
 st.set_page_config(
-    page_title='GDP dashboard',
-    page_icon=':earth_americas:', # This is an emoji shortcode. Could be a URL too.
+    page_title='Panel de PIB',
+    page_icon=':earth_americas:', # Este es un shortcode de emoji. También podría ser una URL.
 )
 
 # -----------------------------------------------------------------------------
-# Declare some useful functions.
+# Declarar algunas funciones útiles.
 
 @st.cache_data
 def get_gdp_data():
-    """Grab GDP data from a CSV file.
+    """Obtener datos de PIB desde un archivo CSV.
 
-    This uses caching to avoid having to read the file every time. If we were
-    reading from an HTTP endpoint instead of a file, it's a good idea to set
-    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
+    Esto usa caché para evitar tener que leer el archivo cada vez. Si estuviéramos
+    leyendo desde un endpoint HTTP en lugar de un archivo, es buena idea establecer
+    una edad máxima para la caché con el argumento TTL: @st.cache_data(ttl='1d')
     """
 
-    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
+    # En lugar de un CSV en disco, también podrías leer desde un endpoint HTTP aquí.
     DATA_FILENAME = Path(__file__).parent/'data/gdp_data.csv'
     raw_gdp_df = pd.read_csv(DATA_FILENAME)
 
     MIN_YEAR = 1960
     MAX_YEAR = 2022
 
-    # The data above has columns like:
+    # Los datos arriba tienen columnas como:
     # - Country Name
     # - Country Code
-    # - [Stuff I don't care about]
-    # - GDP for 1960
-    # - GDP for 1961
-    # - GDP for 1962
+    # - [Cosas que no me importan]
+    # - GDP para 1960
+    # - GDP para 1961
+    # - GDP para 1962
     # - ...
-    # - GDP for 2022
+    # - GDP para 2022
     #
-    # ...but I want this instead:
+    # ...pero quiero esto en su lugar:
     # - Country Name
     # - Country Code
     # - Year
     # - GDP
     #
-    # So let's pivot all those year-columns into two: Year and GDP
+    # Así que vamos a pivotar todas esas columnas de año en dos: Year y GDP
     gdp_df = raw_gdp_df.melt(
         ['Country Code'],
         [str(x) for x in range(MIN_YEAR, MAX_YEAR + 1)],
@@ -52,7 +52,7 @@ def get_gdp_data():
         'GDP',
     )
 
-    # Convert years from string to integers
+    # Convertir años de cadena a enteros
     gdp_df['Year'] = pd.to_numeric(gdp_df['Year'])
 
     return gdp_df
@@ -60,18 +60,18 @@ def get_gdp_data():
 gdp_df = get_gdp_data()
 
 # -----------------------------------------------------------------------------
-# Draw the actual page
+# Dibujar la página actual
 
-# Set the title that appears at the top of the page.
+# Establecer el título que aparece en la parte superior de la página.
 '''
-# :earth_americas: GDP dashboard
+# :earth_americas: Panel de PIB
 
-Browse GDP data from the [World Bank Open Data](https://data.worldbank.org/) website. As you'll
-notice, the data only goes to 2022 right now, and datapoints for certain years are often missing.
-But it's otherwise a great (and did I mention _free_?) source of data.
+Navega los datos de PIB desde el sitio de [World Bank Open Data](https://data.worldbank.org/). Como notarás,
+los datos solo llegan hasta 2022 por ahora, y los puntos de datos para ciertos años a menudo faltan.
+Pero sigue siendo una gran fuente de datos (¿y mencioné que es _gratis_?).
 '''
 
-# Add some spacing
+# Agregar algo de espacio
 ''
 ''
 
@@ -79,7 +79,7 @@ min_value = gdp_df['Year'].min()
 max_value = gdp_df['Year'].max()
 
 from_year, to_year = st.slider(
-    'Which years are you interested in?',
+    '¿Qué años te interesan?',
     min_value=min_value,
     max_value=max_value,
     value=[min_value, max_value])
@@ -87,10 +87,10 @@ from_year, to_year = st.slider(
 countries = gdp_df['Country Code'].unique()
 
 if not len(countries):
-    st.warning("Select at least one country")
+    st.warning("Selecciona al menos un país")
 
 selected_countries = st.multiselect(
-    'Which countries would you like to view?',
+    '¿Qué países te gustaría ver?',
     countries,
     ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN'])
 
@@ -98,14 +98,14 @@ selected_countries = st.multiselect(
 ''
 ''
 
-# Filter the data
+# Filtrar los datos
 filtered_gdp_df = gdp_df[
     (gdp_df['Country Code'].isin(selected_countries))
     & (gdp_df['Year'] <= to_year)
     & (from_year <= gdp_df['Year'])
 ]
 
-st.header('GDP over time', divider='gray')
+st.header('PIB a lo largo del tiempo', divider='gray')
 
 ''
 
@@ -123,7 +123,7 @@ st.line_chart(
 first_year = gdp_df[gdp_df['Year'] == from_year]
 last_year = gdp_df[gdp_df['Year'] == to_year]
 
-st.header(f'GDP in {to_year}', divider='gray')
+st.header(f'PIB en {to_year}', divider='gray')
 
 ''
 
@@ -144,7 +144,7 @@ for i, country in enumerate(selected_countries):
             delta_color = 'normal'
 
         st.metric(
-            label=f'{country} GDP',
+            label=f'PIB de {country}',
             value=f'{last_gdp:,.0f}B',
             delta=growth,
             delta_color=delta_color
