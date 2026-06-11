@@ -1,10 +1,9 @@
 # 🌎 GDP Dashboard Template
+https://gdp-dashboard-template.streamlit.app/
 
 Plantilla de aplicación web desarrollada con **Streamlit** para la visualización y análisis de indicadores económicos.
 
 El proyecto sirve como ejemplo de referencia para la creación de dashboards interactivos basados en datos estructurados, utilizando Python y Streamlit como única tecnología de desarrollo frontend y backend.
-
-[![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://gdp-dashboard-template.streamlit.app/)
 
 ---
 
